@@ -31,14 +31,12 @@ export function useOrganization() {
         return null;
       }
 
-      // First try to get organization from user metadata (faster)
       const orgMetadata = session.user.user_metadata?.organization;
       if (orgMetadata) {
-        // Return organization data from metadata
         return {
           id: orgMetadata.id,
           name: orgMetadata.name,
-          created_by: session.user.id, // Assuming current user is the creator
+          created_by: session.user.id,
           created_at: orgMetadata.joined_at,
           member: {
             org_id: orgMetadata.id,
@@ -49,7 +47,6 @@ export function useOrganization() {
         };
       }
 
-      // Fallback: Query database if metadata doesn't exist
       const { data: membership, error: membershipError } = await supabase
         .from("organization_members")
         .select("*")

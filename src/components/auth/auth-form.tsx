@@ -1,4 +1,3 @@
-import { GalleryVerticalEnd } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,38 +55,33 @@ export function AuthForm({
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col gap-6">
           {/* Header */}
-          <div className="flex flex-col items-center gap-2">
-            <a
-              href="#"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
-              <div className="flex size-12 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                <GalleryVerticalEnd className="size-8" />
-              </div>
-              <span className="sr-only">Scopes App</span>
-            </a>
-            <h1 className="text-2xl font-bold">{title}</h1>
-            {subtitle && (
-              <div className="text-center text-sm">
-                {subtitle.text}{" "}
-                {subtitle.onLinkClick ? (
-                  <button
-                    type="button"
-                    onClick={subtitle.onLinkClick}
-                    className="underline underline-offset-4 hover:text-primary"
-                  >
-                    {subtitle.linkText}
-                  </button>
-                ) : (
-                  <a
-                    href={subtitle.linkHref}
-                    className="underline underline-offset-4"
-                  >
-                    {subtitle.linkText}
-                  </a>
-                )}
-              </div>
-            )}
+          <div className="flex flex-col items-center gap-6">
+            <div className="text-center">
+              <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+                {title}
+              </h1>
+              {subtitle && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {subtitle.text}{" "}
+                  {subtitle.onLinkClick ? (
+                    <button
+                      type="button"
+                      onClick={subtitle.onLinkClick}
+                      className="font-medium text-primary hover:text-primary/80 transition-colors"
+                    >
+                      {subtitle.linkText}
+                    </button>
+                  ) : (
+                    <a
+                      href={subtitle.linkHref}
+                      className="font-medium text-primary hover:text-primary/80 transition-colors"
+                    >
+                      {subtitle.linkText}
+                    </a>
+                  )}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Form Fields */}
@@ -109,7 +103,12 @@ export function AuthForm({
               ))}
             </div>
 
-            <Button disabled={isLoading} type="submit" className="w-full">
+            <Button
+              disabled={isLoading}
+              type="submit"
+              className="inline-flex items-center bg-background/20 backdrop-blur-md border border-gray-200/50 shadow-lg dark:border-gray-700/50"
+              size="sm"
+            >
               {isLoading ? "Loading..." : submitText}
             </Button>
           </div>
@@ -126,6 +125,7 @@ export function AuthForm({
                 {socialLoginHandlers.apple && (
                   <Button
                     variant="outline"
+                    size="sm"
                     type="button"
                     className="w-full"
                     onClick={socialLoginHandlers.apple}
@@ -148,6 +148,7 @@ export function AuthForm({
                   <Button
                     variant="outline"
                     type="button"
+                    size="sm"
                     className="w-full"
                     onClick={socialLoginHandlers.google}
                     disabled={true}

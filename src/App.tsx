@@ -4,11 +4,18 @@ import { QueryProvider } from "./providers/QueryProvider";
 import { useSession } from "./hooks/session/useSession";
 import { Route, Routes } from "react-router";
 import { AuthPage } from "./pages/auth";
-import { HomePage } from "./pages/home";
-
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { MainPage } from "./pages/main";
 function App() {
+  const navigate = useNavigate();
   const session = useSession();
 
+  useEffect(() => {
+    if (session) {
+      navigate("/");
+    }
+  }, [session]);
   return (
     <QueryProvider>
       <MobileGuard
@@ -16,7 +23,7 @@ function App() {
       >
         <Routes>
           {session ? (
-            <Route path="*" element={<HomePage />} />
+            <Route path="*" element={<MainPage />} />
           ) : (
             <Route path="*" element={<AuthPage />} />
           )}

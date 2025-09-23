@@ -1,6 +1,7 @@
 import type { MobileGuardType } from "./MobileGuardType";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { MenuDock } from "../ui/shadcn-io/menu-dock";
 
 export function MobileGuard({
   children,
