@@ -16,7 +16,6 @@ export function RegisterForm({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const fields: AuthFormField[] = [
     {
