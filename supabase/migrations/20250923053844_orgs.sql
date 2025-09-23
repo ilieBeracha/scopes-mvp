@@ -16,46 +16,6 @@ create table if not exists public.organization_members (
   unique(user_id)  -- enforce exactly one org per user
 );
 
--- Auto-create org + admin membership + update user metadata
-create or replace function public.handle_profile_org()
-returns trigger
-language plpgsql
-security definer
-as $$
-declare
-  v_org uuid;
-  v_org_name text;
-begin
-  -- Create organization
-  v_org_name := 'Org of ' || new.email;
-  insert into public.organizations (name, owner_id)
-  values (v_org_name, new.id)
-  returning id into v_org;
-
-  -- Add user as admin member
-  insert into public.organization_members (org_id, user_id, role)
-  values (v_org, new.id, 'admin');
-
-  -- Update user metadata with organization details
-  update auth.users
-  set raw_user_meta_data = coalesce(raw_user_meta_data, '{}'::jsonb) || jsonb_build_object(
-    'organization', jsonb_build_object(
-      'id', v_org,
-      'name', v_org_name,
-      'role', 'admin',
-      'joined_at', now()
-    )
-  )
-  where id = new.id;
-
-  return new;
-end;
-$$;
-
-drop trigger if exists after_profile_insert on public.profiles;
-create trigger after_profile_insert
-after insert on public.profiles
-for each row execute function public.handle_profile_org();
 
 -- Function to update user metadata when organization membership changes
 create or replace function public.update_user_org_metadata()

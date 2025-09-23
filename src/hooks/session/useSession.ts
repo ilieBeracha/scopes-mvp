@@ -5,10 +5,11 @@ import { useEffect } from "react";
 export function useSession() {
   const queryClient = useQueryClient();
 
-  const { data: response } = useQuery({
+  const { data: response, isLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => supabase.auth.getSession(),
-    staleTime: 0, // Always refetch to get latest session state
+    staleTime: 0,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -21,10 +22,13 @@ export function useSession() {
     return () => subscription.unsubscribe();
   }, [queryClient]);
 
-  return response?.data.session;
+  return {
+    session: response?.data.session,
+    isLoading,
+  };
 }
 
 export function useUserMetadata() {
-  const session = useSession();
+  const { session } = useSession();
   return session?.user.user_metadata;
 }

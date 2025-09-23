@@ -4,18 +4,29 @@ import { QueryProvider } from "./providers/QueryProvider";
 import { useSession } from "./hooks/session/useSession";
 import { Route, Routes } from "react-router";
 import { AuthPage } from "./pages/auth";
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
 import { MainPage } from "./pages/main";
-function App() {
-  const navigate = useNavigate();
-  const session = useSession();
+import { Loader2 } from "lucide-react";
 
-  useEffect(() => {
-    if (session) {
-      navigate("/");
-    }
-  }, [session]);
+function App() {
+  const { session, isLoading } = useSession();
+
+  // Show loading screen while session is loading
+  if (isLoading) {
+    return (
+      <QueryProvider>
+        <MobileGuard
+          spacesFromEdges={{ top: 20, bottom: 20, left: 20, right: 20 }}
+        >
+          <div className="flex flex-col justify-center items-center min-h-[100dvh]">
+            <div>
+              <Loader2 className="animate-spin" />
+            </div>
+          </div>
+        </MobileGuard>
+      </QueryProvider>
+    );
+  }
+
   return (
     <QueryProvider>
       <MobileGuard

@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { Home, Calendar, Shield, Settings, ChartBar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 
 type IconComponentType = React.ElementType<{ className?: string }>;
 
@@ -22,14 +21,6 @@ export interface MenuDockProps {
   animated?: boolean;
 }
 
-const defaultItems: MenuDockItem[] = [
-  { label: "home", icon: Home },
-  { label: "training", icon: Calendar },
-  { label: "analyze", icon: ChartBar },
-  { label: "security", icon: Shield },
-  { label: "settings", icon: Settings },
-];
-
 export const MenuDock: React.FC<MenuDockProps> = ({
   items,
   className,
@@ -39,20 +30,47 @@ export const MenuDock: React.FC<MenuDockProps> = ({
   animated = false,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const finalItems = useMemo(() => {
+    // If no items provided, return empty array
+    if (!items) {
+      return [];
+    }
+
+    // If items provided, validate them
     const isValid =
-      items && Array.isArray(items) && items.length >= 2 && items.length <= 8;
+      Array.isArray(items) && items.length >= 2 && items.length <= 8;
     if (!isValid) {
       console.warn(
-        "MenuDock: 'items' prop is invalid or missing. Using default items.",
+        "MenuDock: 'items' prop is invalid. Expected array with 2-8 items.",
         items
       );
-      return defaultItems;
+      return [];
     }
     return items;
   }, [items]);
 
-  const [activeIndex, setActiveIndex] = useState(0);
+  // Calculate active index based on current location
+  const activeIndex = useMemo(() => {
+    if (!finalItems || finalItems.length === 0) {
+      return 0;
+    }
+
+    const currentPath = location.pathname;
+    // Handle exact matches first
+    if (currentPath === "/" || currentPath === "/home") {
+      return finalItems.findIndex((item) => item.label === "home");
+    }
+
+    // For other paths, find the matching item
+    const index = finalItems.findIndex((item) => {
+      const pathSegment = currentPath.replace("/", "");
+      return pathSegment === item.label;
+    });
+
+    return index >= 0 ? index : 0; // Default to first item (home)
+  }, [location.pathname, finalItems]);
   const [underlineWidth, setUnderlineWidth] = useState(0);
   const [underlineLeft, setUnderlineLeft] = useState(0);
 
@@ -60,15 +78,9 @@ export const MenuDock: React.FC<MenuDockProps> = ({
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
-    if (activeIndex >= finalItems.length) {
-      setActiveIndex(0);
-    }
-  }, [finalItems, activeIndex]);
-
-  useEffect(() => {
     const updateUnderline = () => {
-      const activeButton = itemRefs.current[activeIndex];
-      const activeText = textRefs.current[activeIndex];
+      const activeButton = itemRefs.current[activeIndex ?? 0];
+      const activeText = textRefs.current[activeIndex ?? 0];
 
       if (
         activeButton &&
@@ -97,8 +109,7 @@ export const MenuDock: React.FC<MenuDockProps> = ({
     return () => window.removeEventListener("resize", updateUnderline);
   }, [activeIndex, finalItems, showLabels, orientation]);
 
-  const handleItemClick = (index: number, item: MenuDockItem) => {
-    setActiveIndex(index);
+  const handleItemClick = (item: MenuDockItem) => {
     navigate(`/${item.label}`);
     item.onClick?.();
   };
@@ -141,7 +152,7 @@ export const MenuDock: React.FC<MenuDockProps> = ({
   return (
     <nav
       className={cn(
-        "inline-flex absolute bottom-4 items-center bg-sidebar-accent backdrop-blur-md border border-gray-200/50 shadow-lg dark:border-gray-700/50",
+        "inline-flex absolute bottom-8 items-center bg-sidebar-accent backdrop-blur-md border border-gray-200/50 shadow-lg dark:border-gray-700/50 pointer-events-auto",
         orientation === "horizontal" ? "flex-row" : "flex-col",
         variant === "mini" ? "rounded-lg" : "rounded-xl",
         styles.container,
@@ -149,7 +160,7 @@ export const MenuDock: React.FC<MenuDockProps> = ({
       )}
       role="navigation"
     >
-      {finalItems.map((item, index) => {
+      {finalItems?.map((item, index) => {
         const isActive = index === activeIndex;
         const IconComponent = item.icon;
 
@@ -160,14 +171,16 @@ export const MenuDock: React.FC<MenuDockProps> = ({
               itemRefs.current[index] = el;
             }}
             className={cn(
-              "relative flex flex-col items-center justify-center rounded-lg transition-all duration-200",
+              "relative flex flex-col items-center justify-center rounded-lg transition-all duration-200 cursor-pointer",
               "hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "hover:scale-105 active:scale-95",
               styles.item,
               isActive && "text-primary",
               !isActive && "text-muted-foreground hover:text-foreground"
             )}
-            onClick={() => handleItemClick(index, item)}
+            onClick={() => handleItemClick(item)}
             aria-label={item.label}
+            data-index={index}
             type="button"
           >
             <div
@@ -226,7 +239,8 @@ export const MenuDock: React.FC<MenuDockProps> = ({
             [orientation === "vertical" ? "top" : "left"]:
               orientation === "vertical"
                 ? `${
-                    activeIndex *
+                    activeIndex ??
+                    0 *
                       (variant === "large"
                         ? 64
                         : variant === "compact"
@@ -234,16 +248,17 @@ export const MenuDock: React.FC<MenuDockProps> = ({
                         : variant === "mini"
                         ? 40
                         : 60) +
-                    (variant === "large"
-                      ? 19
-                      : variant === "compact"
-                      ? 16
-                      : variant === "mini"
-                      ? 12
-                      : 18)
+                      (variant === "large"
+                        ? 19
+                        : variant === "compact"
+                        ? 16
+                        : variant === "mini"
+                        ? 12
+                        : 18)
                   }px`
                 : `${
-                    activeIndex *
+                    activeIndex ??
+                    0 *
                       (variant === "large"
                         ? 64
                         : variant === "compact"
@@ -251,13 +266,13 @@ export const MenuDock: React.FC<MenuDockProps> = ({
                         : variant === "mini"
                         ? 40
                         : 60) +
-                    (variant === "large"
-                      ? 19
-                      : variant === "compact"
-                      ? 16
-                      : variant === "mini"
-                      ? 12
-                      : 18)
+                      (variant === "large"
+                        ? 19
+                        : variant === "compact"
+                        ? 16
+                        : variant === "mini"
+                        ? 12
+                        : 18)
                   }px`,
           }}
         />
