@@ -13,7 +13,7 @@ export function MainPage() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/training" element={<TrainingPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Routes>
