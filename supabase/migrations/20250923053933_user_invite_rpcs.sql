@@ -1,4 +1,4 @@
--- Invite RPC
+-- Invite user
 create or replace function public.invite_user(
   p_email text,
   p_org uuid,
@@ -18,7 +18,7 @@ begin
 end;
 $$;
 
--- Accept RPC
+-- Accept invite
 create or replace function public.accept_invite(
   p_token text
 ) returns organization_members
@@ -41,7 +41,7 @@ begin
 
   insert into organization_members(org_id, user_id, role)
   values (v_inv.org_id, auth.uid(), v_inv.role)
-  on conflict (org_id, user_id) do update set role = excluded.role
+  on conflict (user_id) do update set role = excluded.role, org_id = excluded.org_id
   returning * into v_mem;
 
   update invitations set status = 'accepted' where id = v_inv.id;

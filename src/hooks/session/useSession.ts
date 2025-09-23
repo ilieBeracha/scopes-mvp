@@ -23,3 +23,8 @@ export function useSession() {
 
   return response?.data.session;
 }
+
+export function useUserMetadata() {
+  const session = useSession();
+  return session?.user.user_metadata;
+}
