@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLoginOAuth } from "@/hooks/profile/useLogin";
+import { useLoginOAuth, useLoginOTP } from "@/hooks/profile/useLogin";
 import { AuthForm, type AuthFormField } from "./auth-form";
 
 interface LoginFormProps extends React.ComponentProps<"div"> {
@@ -12,6 +12,7 @@ export function LoginForm({
   ...props
 }: LoginFormProps) {
   const { mutate: login, isPending: isLoginPending } = useLoginOAuth();
+  const { mutate: loginOTP, isPending: isLoginOTPPending } = useLoginOTP();
   const [email, setEmail] = useState("");
 
   const fields: AuthFormField[] = [
@@ -28,7 +29,7 @@ export function LoginForm({
 
   const handleSubmit = () => {
     // For now, login with email or social
-    login({ provider: "google" });
+    loginOTP({ email });
   };
 
   const socialLoginHandlers = {
@@ -48,7 +49,7 @@ export function LoginForm({
         fields={fields}
         submitText="Login"
         onSubmit={handleSubmit}
-        isLoading={isLoginPending}
+        isLoading={isLoginPending || isLoginOTPPending}
         showSocialLogins={true}
         socialLoginHandlers={socialLoginHandlers}
       />
