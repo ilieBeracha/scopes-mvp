@@ -1,8 +1,14 @@
 import { supabase } from "@/lib/supabase";
-import { useMutation } from "@tanstack/react-query";
-import type { Provider } from "@supabase/supabase-js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type {
+  Provider,
+  Session,
+  User,
+  WeakPassword,
+} from "@supabase/supabase-js";
 
 export function useLoginOAuth() {
+  const queryClient = useQueryClient();
   return useMutation<
     { provider: Provider; url: string },
     Error,
@@ -19,28 +25,41 @@ export function useLoginOAuth() {
       if (error) throw error;
       return data;
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
   });
 }
 
-export function useLoginOTP() {
+export function useLoginPassword() {
+  const queryClient = useQueryClient();
   return useMutation<
-    { user: null; session: null; messageId?: string | null },
+    { user: User; session: Session; weakPassword?: WeakPassword },
     Error,
-    { email: string; options?: { shouldCreateUser?: boolean } }
+    { email: string; password: string }
   >({
     mutationFn: async ({
       email,
-      options,
+      password,
     }: {
       email: string;
-      options?: { shouldCreateUser?: boolean };
+      password: string;
     }) => {
-      const { data, error } = await supabase.auth.signInWithOtp({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        options,
+        password,
       });
       if (error) throw error;
       return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+    onError: (error) => {
+      console.error(error);
     },
   });
 }

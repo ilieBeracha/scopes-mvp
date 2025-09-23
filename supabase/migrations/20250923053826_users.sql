@@ -1,7 +1,6 @@
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text unique,
-  full_name text,
   created_at timestamptz default now()
 );
 
@@ -12,7 +11,11 @@ security definer
 as $$
 begin
   insert into public.profiles (id, email, created_at)
-  values (new.id, new.email, new.created_at);
+  values (
+    new.id, 
+    new.email, 
+    new.created_at
+  );
   return new;
 end;
 $$;

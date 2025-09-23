@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLoginOAuth, useLoginOTP } from "@/hooks/profile/useLogin";
+import { useLoginOAuth, useLoginPassword } from "@/hooks/profile/useLogin";
 import { AuthForm, type AuthFormField } from "./auth-form";
 
 interface LoginFormProps extends React.ComponentProps<"div"> {
@@ -12,9 +12,10 @@ export function LoginForm({
   ...props
 }: LoginFormProps) {
   const { mutate: login, isPending: isLoginPending } = useLoginOAuth();
-  const { mutate: loginOTP, isPending: isLoginOTPPending } = useLoginOTP();
+  const { mutate: loginPassword, isPending: isLoginPasswordPending } =
+    useLoginPassword();
   const [email, setEmail] = useState("");
-
+  const [password, setPassword] = useState("");
   const fields: AuthFormField[] = [
     {
       id: "email",
@@ -25,11 +26,20 @@ export function LoginForm({
       value: email,
       onChange: setEmail,
     },
+    {
+      id: "password",
+      label: "Password",
+      type: "password",
+      placeholder: "Password",
+      required: true,
+      value: password,
+      onChange: setPassword,
+    },
   ];
 
   const handleSubmit = () => {
     // For now, login with email or social
-    loginOTP({ email });
+    loginPassword({ email, password });
   };
 
   const socialLoginHandlers = {
@@ -49,7 +59,7 @@ export function LoginForm({
         fields={fields}
         submitText="Login"
         onSubmit={handleSubmit}
-        isLoading={isLoginPending || isLoginOTPPending}
+        isLoading={isLoginPending || isLoginPasswordPending}
         showSocialLogins={true}
         socialLoginHandlers={socialLoginHandlers}
       />

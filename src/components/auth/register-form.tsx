@@ -15,18 +15,8 @@ export function RegisterForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [fullName, setFullName] = useState("");
 
   const fields: AuthFormField[] = [
-    {
-      id: "fullName",
-      label: "Full Name",
-      type: "text",
-      placeholder: "John Doe",
-      required: true,
-      value: fullName,
-      onChange: setFullName,
-    },
     {
       id: "email",
       label: "Email",

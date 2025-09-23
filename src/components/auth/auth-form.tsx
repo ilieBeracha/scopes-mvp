@@ -129,7 +129,7 @@ export function AuthForm({
                     type="button"
                     className="w-full"
                     onClick={socialLoginHandlers.apple}
-                    disabled={isLoading}
+                    disabled={true}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +150,7 @@ export function AuthForm({
                     type="button"
                     className="w-full"
                     onClick={socialLoginHandlers.google}
-                    disabled={isLoading}
+                    disabled={true}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

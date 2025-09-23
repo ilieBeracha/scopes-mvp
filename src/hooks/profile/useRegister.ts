@@ -1,6 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { useNavigate } from "react-router";
 
 type RegisterInput = {
   email: string;
@@ -8,7 +7,8 @@ type RegisterInput = {
 };
 
 export function useRegister() {
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({ email, password }: RegisterInput) => {
       const { data, error } = await supabase.auth.signUp({
@@ -16,8 +16,13 @@ export function useRegister() {
         password,
       });
       if (error) throw error;
-      navigate("/");
       return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+    onError: (error) => {
+      console.error(error);
     },
   });
 }
