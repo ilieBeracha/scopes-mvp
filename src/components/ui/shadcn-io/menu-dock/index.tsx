@@ -152,7 +152,7 @@ export const MenuDock: React.FC<MenuDockProps> = ({
   return (
     <nav
       className={cn(
-        "inline-flex absolute bottom-8 items-center bg-sidebar-accent backdrop-blur-md border border-gray-200/50 shadow-lg dark:border-gray-700/50 pointer-events-auto",
+        "inline-flex absolute bottom-8 items-center bg-sidebar-accent backdrop-blur-md border  shadow-lg dark:border-gray-700/50 pointer-events-auto",
         orientation === "horizontal" ? "flex-row" : "flex-col",
         variant === "mini" ? "rounded-lg" : "rounded-xl",
         styles.container,
