@@ -29,7 +29,6 @@ export function RegisterForm({
       { email, password, firstName, lastName },
       {
         onSuccess: () => {
-          // Call the callback to show org creation form
           onRegistrationSuccess?.();
         },
       }

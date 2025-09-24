@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 
 interface LoginFormProps extends React.ComponentProps<"div"> {
   onSwitchForm?: () => void;
+  onLoginSuccess?: () => void;
 }
 
 export function LoginForm({
   className,
   onSwitchForm,
+  onLoginSuccess,
   ...props
 }: LoginFormProps) {
   const { mutate: login, isPending: isLoginPending } = useLoginOAuth();
@@ -24,7 +26,12 @@ export function LoginForm({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    loginPassword({ email, password });
+    loginPassword(
+      { email, password },
+      {
+        onSuccess: () => onLoginSuccess?.(),
+      }
+    );
   };
 
   const socialLoginHandlers = {

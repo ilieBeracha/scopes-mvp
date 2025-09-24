@@ -4,7 +4,6 @@ export function SettingsPage() {
   const { mutate: logout, isPending } = useLogout();
   return (
     <div className="space-y-1">
-      {/* Account Section */}
       <div
         className=" backdrop-blur-sm 
         rounded-xl border overflow-hidden"

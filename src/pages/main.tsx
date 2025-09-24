@@ -45,7 +45,7 @@ export function MainPage() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center max-h-[100dvh]">
+    <div className="flex flex-col justify-center  max-h-[100dvh]">
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<HomePage />} />
