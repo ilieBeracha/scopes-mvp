@@ -60,7 +60,6 @@ export function MobileGuard({
     );
   }
 
-  // Merge user spacing with safe area insets
   const paddingStyle = {
     paddingTop: `${spacesFromEdges.top + insets.top}px`,
     paddingBottom: `${spacesFromEdges.bottom + insets.bottom}px`,
