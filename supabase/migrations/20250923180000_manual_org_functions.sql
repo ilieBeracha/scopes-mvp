@@ -96,6 +96,8 @@ as $$
 $$;
 
 -- Add policy for organization creation
+drop policy if exists "users can create organizations" on public.organizations;
+
 create policy "users can create organizations"
 on public.organizations
 for insert
